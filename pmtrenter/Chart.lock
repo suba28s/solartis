@@ -1,0 +1,15 @@
+dependencies:
+- name: pmt-multikb
+  repository: https://raw.githubusercontent.com/suba28s/multikb/master
+  version: 0.1.0
+- name: pmt-kb
+  repository: https://raw.githubusercontent.com/suba28s/pmt-kb/master
+  version: 0.1.0
+- name: renter
+  repository: https://raw.githubusercontent.com/suba28s/raas-web/master
+  version: 0.1.0
+- name: commonsvc
+  repository: https://raw.githubusercontent.com/suba28s/authentication/master
+  version: 0.1.0
+digest: sha256:9ae2d160c0450e8835d6cbd87b675d36c28938fd0c089e592221854fd2a0cdff
+generated: "2021-01-07T07:08:41.219433841Z"

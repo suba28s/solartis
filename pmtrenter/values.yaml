@@ -1,0 +1,214 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+ env:
+  sysdbip: "10.50.0.3"
+  prddbip: "10.50.0.3"
+  logdbip: "10.50.0.3"
+  sysdbport: "3401"
+  prddbport: "3402"
+  logdbport: "3501"
+
+
+# Default values for pmt-renters.
+
+replicaCount: 1
+
+image:
+  repository: iad.ocir.io/solartis/pmt/uiux
+  pullPolicy: IfNotPresent
+  tag: "envtest1"
+
+imagePullSecrets:
+  - name: oke-registry
+
+env:
+  - name: timeout
+    value: "3000"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+service:
+  type: ClusterIP
+  ports:
+    - port: 9990
+      name: console
+      targetPort: 9990
+    - port: 8080
+      name: http
+      targetPort: 8080
+    - port: 8443
+      name: https
+      targetPort: 8443
+
+ingress:
+  enabled: true
+  hosts:
+    - host: oke-renters-pmt.solartis.net
+      paths:
+      - backend:
+            serviceName: pmtweb-service
+            servicePort: 8080
+  tls:
+    - hosts:
+         -  oke-renters-pmt.solartis.net
+      secretName: tls-solartis
+
+resources:
+  limits:
+      cpu: "5000m"
+  requests:
+      cpu: "1000m"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+volumes:
+    claimname1: helm-pmt-pvc-trans
+    claimname2: helm-pmt-pvc-temp
+
+persistence:
+  enabled: true
+  storageClass: oci-fss
+  accessMode: ReadWriteMany
+  size: 10Gi
+  server: 10.50.0.8
+  path1: /shared-data-pmt/
+  path2: /shared-data
+
+
+#values use for pmt-kb
+pmt-kb:
+ image:
+  repository: iad.ocir.io/solartis/pmt/kb
+  tag: "envtest"
+ env:
+  - name: timeout
+    value: "3000"
+  - name: groupname
+    value: "PMT_KB"
+
+#values for pmt-multikb service
+pmt-multikb:
+ image:
+  repository: iad.ocir.io/solartis/pmt/multikb
+  tag: "envtest"
+ env:
+  - name: timeout
+    value: "3000"
+  - name: groupname
+    value: "COMMONMULTIKB"
+
+
+#values for raas-eap service
+raas-eap:
+ image:
+  repository: iad.ocir.io/solartis/renters/droolsv6
+  tag: "envtest"
+ env:
+    - name: groupname
+      value: "commonwrkflwkb"
+    - name: timeout
+      value: 3000
+ ingress:
+      host: oke-rentersraas.solartis.net
+      tlssecret: tls-solartis
+ persistence:
+   storageClass: oci-fss
+   size: 10Gi
+   server: 10.50.0.8
+   path: /shared-data-pmt/
+
+
+#values for renters service
+renter:
+ env:
+  - name: port
+    value: "3000"
+ ingress:
+     host: oke-rentersprogram.solartis.net
+     tlssecret: tls-solartis
+ image:
+    repository: iad.ocir.io/solartis/renters/web
+    tag: "node5"
+ 
+
+#values for authentication service
+commonsvc:
+  ingress:
+      host: authenticationservice.solartis.net
+      tlssecret: tls-solartis 
+  image: 
+        repository: iad.ocir.io/solartis/platformservices/authentication
+        tag: "v9"
+  env:
+   - name: timeout
+     value: "3000"
+  persistence:
+   storageClass: oci-fss
+   size: 10Gi
+   server: 10.50.0.8
+   path: /shared-data-pmt/
+
+
+#values for privilege service
+privilege:
+  ingress:
+      host: oke-privilegeservice.solartis.net
+      tlssecret: tls-solartis
+  image:
+        repository: iad.ocir.io/solartis/platformservices/privilege
+        tag: "v10"
+  env:
+   - name: timeout
+     value: "3000"
+
+
+#values for email service
+email:
+  image:
+        repository: iad.ocir.io/solartis/platformservices/email
+        tag: "v10"
+  env:
+   - name: timeout
+     value: "3000"
+   - name: smtp-server
+     value: "smtp.solartis.in"
+   - name: smtp-port
+     value: "25"
+   - name: smtp-user
+     value: "noreply_qa.solartis.in"
+   - name: smtp-passwd
+     value: "Jan2019"
+ 
+
+#values for pdf service
+pdf:
+ image:
+  repository: iad.ocir.io/solartis/platformservices/pdfgeneration
+  tag: "v6"
+ persistence:
+   storageClass: oci-fss
+   size: 10Gi
+   server: 10.50.0.8
+   path: /shared-data
+ env:
+  - name: timeout
+    value: "3000"
+
+#values for application service
+application:
+ image:
+  repository: iad.ocir.io/solartis/platformservices/application
+  tag: "v10"
+ env:
+   - name: timeout
+     value: "3000"

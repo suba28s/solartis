@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "pmt-multikb.fullname" . }}-test-connection"
+  labels:
+    {{- include "pmt-multikb.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "pmt-multikb.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

@@ -1,0 +1,6 @@
+dependencies:
+- name: raas-eap
+  repository: https://raw.githubusercontent.com/suba28s/helm-test/master
+  version: 0.1.0
+digest: sha256:418c8f14d0b510c44708f203852b9f5da366b91a453e60d50eccc58e0fae6ea5
+generated: "2021-01-06T12:43:12.797728043Z"

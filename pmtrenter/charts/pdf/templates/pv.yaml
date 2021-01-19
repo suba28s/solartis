@@ -1,0 +1,27 @@
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+ name: helm-common-pv-temp
+ annotations:
+    "helm.sh/hook": pre-install
+    #"helm.sh/resource-policy": keep
+    "helm.sh/hook-delete-policy": hook-failed
+  {{- if .Values.persistence.storageClass }}
+    volume.beta.kubernetes.io/storage-class: {{ .Values.persistence.storageClass | quote }}
+  {{- else }}
+    volume.alpha.kubernetes.io/storage-class: default
+  {{- end }}
+spec:
+  storageClassName:  {{ .Values.persistence.storageClass }}
+  capacity:
+    storage: {{ .Values.persistence.size}}
+  accessModes:
+    - {{ .Values.persistence.accessMode}}
+  mountOptions:
+    - nosuid
+  nfs:
+   server: {{ .Values.persistence.server}}
+   path: "{{ .Values.persistence.path}}"
+   readOnly: false
+{{- end }}

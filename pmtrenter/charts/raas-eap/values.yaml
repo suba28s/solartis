@@ -1,0 +1,107 @@
+# Default values for raas-eap.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+image:
+  repository: iad.ocir.io/solartis/renters/droolsv6
+  pullPolicy: IfNotPresent
+  tag: "envtest"
+
+imagePullSecrets: 
+   - name: oke-registry
+nameOverride: ""
+fullnameOverride: ""
+
+env:
+    - name: groupname
+      value: "commonwrkflwkb"
+    - name: timeout
+      value: 3000
+    - name: sysdbip
+      value: "10.50.0.3"
+    - name: prddbip
+      value: "10.50.0.3"
+    - name: logdbip
+      value: "10.50.0.3"
+    - name: sysdbport
+      value: 3401
+    - name: prddbport
+      value: 3402
+    - name: logdbport
+      value: 3501
+    - name: JAVA_OPTS
+      value: "-server -Xms2048m -Xmx2048m -XX:MetaspaceSize=512M -XX:MaxMetaspaceSize=512m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true"
+
+resources:
+    limits:
+      cpu: "3000m"
+      #memory: "10000Mi"
+    requests:
+      cpu: "1500m"
+      #memory: "8500Mi"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  ports:
+    - name: runtime
+      port: 8080
+      targetPort: 8080
+    - name: https
+      port: 8443
+      targetPort: 8443
+    - name: console
+      port: 9990
+      targetPort: 9990 
+
+ingress:
+  enabled: true
+  host: oke-rentersraas.solartis.net
+  tlssecret:  tls-solartis
+  
+volumes: 
+   #persistentVolumeClaim:
+   claimname: helm-nfs-pvc
+
+persistence:
+    enabled: true
+    storageClass: oci-fss
+    accessMode: ReadWriteMany
+    size: 10Gi
+    server: 10.50.0.8
+    path: /shared-data-pmt/
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

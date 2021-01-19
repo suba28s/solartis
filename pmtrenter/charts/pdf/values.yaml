@@ -1,0 +1,115 @@
+# Default values for auth.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: iad.ocir.io/solartis/platformservices/pdfgeneration
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "v6"
+
+imagePullSecrets:
+  - name: oke-registry
+nameOverride: ""
+fullnameOverride: ""
+
+env:
+  - name: timeout
+    value: "3000"
+  - name: sysdbip
+    value: "10.50.0.3"
+  - name: prddbip
+    value: "10.50.0.3"
+  - name: logdbip
+    value: "10.50.0.3"
+  - name: sysdbport
+    value: "3401"
+  - name: prddbport
+    value: "3402"
+  - name: logdbport
+    value: "3501"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  ports:
+    - port: 9990
+      name: console
+      targetPort: 9990
+    - port: 8080
+      name: http
+      targetPort: 8080
+    - port: 8443
+      name: https
+      targetPort: 8443
+
+ingress:
+  enabled: false
+  annotations: {
+    kubernetes.io/ingress.class: nginx
+  }
+    # kubernetes.io/tls-acme: "true"
+
+resources:
+  limits:
+      cpu: "3000m"
+  requests:
+      cpu: "1000m"
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+volumes:
+    claimname1: helm-common-pvc
+    claimname2: helm-common-pvc-temp
+
+persistence:
+  enabled: true
+  storageClass: oci-fss
+  accessMode: ReadWriteMany
+  size: 10Gi
+  server: 10.50.0.8
+  path: /shared-data
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

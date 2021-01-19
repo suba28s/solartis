@@ -1,0 +1,18 @@
+dependencies:
+- name: privilege
+  repository: https://raw.githubusercontent.com/suba28s/privilege/master
+  version: 0.1.0
+- name: application
+  repository: https://raw.githubusercontent.com/suba28s/application/master
+  version: 0.1.0
+- name: email
+  repository: https://raw.githubusercontent.com/suba28s/email/master
+  version: 0.1.0
+- name: pdf
+  repository: https://raw.githubusercontent.com/suba28s/pdf/master
+  version: 0.1.0
+- name: plutext
+  repository: https://raw.githubusercontent.com/suba28s/plutext/master
+  version: 0.1.0
+digest: sha256:e8e1fc8468eb751107a3098bd332049019473145403076fae8ec73c03ff0e296
+generated: "2021-01-06T13:33:31.625731375Z"

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "application.fullname" . }}
+  namespace: commonservices
+  labels:
+    {{- include "application.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "application.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "application.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- range .Values.env}}
+            - name: {{ .name}}
+              value: "{{ .value }}"
+            {{- end}}
+            - name: sysdbip
+              value: "{{ .Values.global.env.sysdbip}}"
+            - name: prddbip
+              value: "{{ .Values.global.env.prddbip}}"
+            - name: logdbip
+              value: "{{ .Values.global.env.logdbip}}"
+            - name: sysdbport
+              value: "{{ .Values.global.env.sysdbport}}"
+            - name: prddbport
+              value: "{{ .Values.global.env.prddbport}}"
+            - name: logdbport
+              value: "{{ .Values.global.env.logdbport}}"
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: console
+              containerPort: 9990
+            - name: https
+              containerPort: 8443
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: transmount
+              mountPath: /opt/SharedData/Shared/Solartis/Transaction
+      volumes:
+        - name: transmount
+          persistentVolumeClaim:
+            claimName: {{ .Values.volumes.claimname}}
