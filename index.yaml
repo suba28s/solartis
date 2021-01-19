@@ -1,3 +1,14 @@
 apiVersion: v1
-entries: {}
-generated: "2021-01-19T09:42:09.282484083Z"
+entries:
+  pmtrenter:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2021-01-19T10:02:14.383156514Z"
+    description: A Helm chart for Kubernetes
+    digest: adb39f57bced0664b3cd26ea279ba74c6f4d68959db36b62eaf076acdfedb199
+    name: pmtrenter
+    type: application
+    urls:
+    - pmtrenter-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-01-19T10:02:14.373108773Z"
